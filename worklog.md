@@ -74,3 +74,23 @@ Stage Summary:
 - DATABASE_URL must be set to file:/data/custom.db in Railway Variables tab
 - DB schema is auto-applied on every startup via prisma db push
 - Without the volume, SQLite would be wiped on every redeploy — now persists across deployments and restarts
+
+---
+Task ID: 4
+Agent: main
+Task: Fix Railway build failure - 'addgroup: not found'
+
+Work Log:
+- Root cause: oven/bun:1 image is based on Debian but doesn't ship addgroup/adduser
+- Switched runner stage from `oven/bun:1` to `node:22-slim` (Debian slim with groupadd/useradd available)
+- Used `groupadd --system --gid 1001 nodejs` + `useradd --system --uid 1001 --gid nodejs --create-home --shell /bin/false nextjs`
+- Installed curl + ca-certificates (needed for HEALTHCHECK; slim images don't include them)
+- Changed start-railway.sh shebang from `#!/bin/bash` to `#!/bin/sh` (slim images don't have bash)
+- Updated package.json start:railway script to invoke via `sh` instead of `bash`
+- Verified build succeeds locally
+- Committed (93db604) and pushed to GitHub
+
+Stage Summary:
+- Build error resolved: image now has the required Linux user-management tools
+- Build stages 1 and 2 still use oven/bun:1 for Bun-based install/build
+- Stage 3 (runner) uses node:22-slim for smaller image + standard Linux tools
