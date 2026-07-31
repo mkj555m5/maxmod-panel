@@ -21,3 +21,34 @@ Stage Summary:
 - Lint passes with 0 errors
 - Dev server running cleanly on port 3000 (sandbox preview)
 - All core user flows verified working via Agent Browser
+
+---
+Task ID: 2
+Agent: main
+Task: Add Railway deployment support with port 8080 and domain management
+
+Work Log:
+- Updated next.config.ts with standalone output and security headers
+- Created railway.json and railway.toml with port 8080 config and healthcheck
+- Created Dockerfile (multi-stage build) and .dockerignore
+- Added /api/health endpoint for Railway healthchecks
+- Added Domain model to Prisma schema (hostname, type, status, SSL, primary)
+- Added /api/domains CRUD endpoints (POST, GET, PATCH, DELETE)
+- Built DomainsManager page in owner dashboard with:
+  - Create domain dialog (Railway auto or custom)
+  - Link to app or panel main domain
+  - Set primary domain, SSL status badges
+  - Visit domain link, Railway deployment instructions (AR/EN)
+  - Port config card showing 8080
+- Added Domains section to Sidebar (desktop) and mobile menu
+- Added 30+ bilingual translations for domain features
+- Updated package.json with start:railway and start:prod scripts + postinstall
+- Created comprehensive README.md with Railway + Docker deployment guide
+- Created .env.example with Railway deployment notes
+- Verified with Agent Browser: domain creation, listing, language switch
+
+Stage Summary:
+- All requested features implemented: Railway config (port 8080), domain management UI, bilingual instructions
+- Lint passes with 0 errors
+- Dev server running cleanly
+- Pushed to GitHub: commit 7597afd
