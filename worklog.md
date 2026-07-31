@@ -94,3 +94,31 @@ Stage Summary:
 - Build error resolved: image now has the required Linux user-management tools
 - Build stages 1 and 2 still use oven/bun:1 for Bun-based install/build
 - Stage 3 (runner) uses node:22-slim for smaller image + standard Linux tools
+
+---
+Task ID: 5
+Agent: main
+Task: Fix Railway deploy failure - 'The executable bun could not be found'
+
+Work Log:
+- Analyzed screenshot via VLM — Railway deploy failed at 'Create container' stage
+- Root cause: railway.toml/railway.json had `builder = "NIXPACKS"` + `startCommand = "bun run start:railway"`
+  - NIXPACKS builder IGNORES the Dockerfile and builds its own image from package.json
+  - At runtime, Nixpacks-built container tried to invoke `bun` but our runner stage (node:22-slim) doesn't have bun
+  - Result: "The executable `bun` could not be found" → deploy failed
+- Fix: switched Railway builder from NIXPACKS → DOCKERFILE
+  - railway.toml: `builder = "DOCKERFILE"`, `dockerfilePath = "Dockerfile"`
+  - railway.json: same change mirrored
+  - Removed startCommand entirely (Dockerfile CMD ['./start-railway.sh'] now handles startup)
+  - start-railway.sh runs `node ./node_modules/prisma/build/index.js db push` + `exec node server.js`
+  - No bun dependency at runtime — only node (available in node:22-slim)
+- Verified Prisma CLI path exists in node_modules (node_modules/prisma/build/index.js)
+- Verified Dockerfile copies prisma CLI into runner stage via `COPY --from=builder /app/node_modules/prisma`
+- Verified build succeeds locally + standalone output contains start-railway.sh + prisma/schema.prisma
+- Committed (be9d848) and pushed to GitHub
+
+Stage Summary:
+- Railway will now use the Dockerfile directly (multi-stage build)
+- Runtime image: node:22-slim (has node + curl, no bun needed)
+- Startup: prisma db push → node server.js (port 8080)
+- Volume still declared at /data (1GB) for SQLite persistence
