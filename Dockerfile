@@ -26,16 +26,21 @@ COPY . .
 RUN bun run build
 
 # ---- Stage 3: Runner ----
-FROM oven/bun:1 AS runner
+# Use Node.js official slim image (Debian-based, has groupadd/useradd)
+FROM node:22-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOSTNAME=0.0.0.0
 
-# Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+# Create non-root user for security (Debian uses groupadd/useradd, not addgroup/adduser)
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs --create-home --shell /bin/false nextjs
+
+# Install curl for healthcheck (slim images don't include it by default)
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy standalone server
 COPY --from=builder /app/.next/standalone ./

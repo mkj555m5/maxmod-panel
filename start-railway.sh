@@ -1,6 +1,7 @@
 #!/bin/sh
 # Maxmod Panel - Railway startup script
 # Ensures the SQLite database exists on the volume and schema is applied.
+# Uses /bin/sh for maximum compatibility (slim images may not have bash).
 
 set -e
 
@@ -23,7 +24,7 @@ fi
 # Apply Prisma schema to the database (creates file + tables if missing)
 # This is safe to run on every startup — it only applies changes if needed.
 echo "[maxmod-panel] Applying Prisma schema..."
-node node_modules/prisma/build/index.js db push --accept-data-loss --skip-generate || {
+node ./node_modules/prisma/build/index.js db push --accept-data-loss --skip-generate || {
   echo "[maxmod-panel] WARNING: prisma db push failed — the seedDatabase() function will attempt to create tables at runtime"
 }
 
