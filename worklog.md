@@ -52,3 +52,25 @@ Stage Summary:
 - Lint passes with 0 errors
 - Dev server running cleanly
 - Pushed to GitHub: commit 7597afd
+
+---
+Task ID: 3
+Agent: main
+Task: Add Railway Volume support for persistent SQLite storage
+
+Work Log:
+- Added [[deploy.volume]] section to railway.toml declaring 'maxmod-data' volume (mountPath=/data, size=1GB)
+- Mirrored same volume config in railway.json (volumes array)
+- Created start-railway.sh startup script that runs 'prisma db push' before starting the Next.js server, ensuring DB schema is applied to the volume-mounted SQLite file on first run
+- Updated Dockerfile to copy prisma CLI binary, start-railway.sh, and create /data directory with proper ownership
+- Updated package.json build script to copy start-railway.sh and prisma/ folder into .next/standalone/
+- Updated package.json start:railway script to invoke start-railway.sh instead of directly running node server.js
+- Rewrote .env.example with comprehensive bilingual instructions for both Config-as-Code and manual volume setup via Railway dashboard
+- Verified build succeeds and start-railway.sh is correctly placed in .next/standalone/
+- Committed (48f7cc5) and pushed to GitHub
+
+Stage Summary:
+- Volume is now declared via Config-as-Code — Railway auto-creates it on next deploy
+- DATABASE_URL must be set to file:/data/custom.db in Railway Variables tab
+- DB schema is auto-applied on every startup via prisma db push
+- Without the volume, SQLite would be wiped on every redeploy — now persists across deployments and restarts
