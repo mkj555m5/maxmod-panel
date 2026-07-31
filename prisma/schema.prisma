@@ -50,6 +50,7 @@ model App {
   cpuUsed     Float    @default(0)
   nodeVersion String   @default("22.x")
   repoUrl     String?
+  domains     Domain[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -62,4 +63,17 @@ model SystemStat {
   usedDisk  Int      @default(0)
   cpuUsage  Float    @default(0)
   updatedAt DateTime @updatedAt
+}
+
+model Domain {
+  id          String   @id @default(cuid())
+  hostname    String   @unique // e.g. myapp.up.railway.app or custom-domain.com
+  type        String   @default("RAILWAY") // RAILWAY (auto *.up.railway.app) | CUSTOM
+  appId       String?  // linked to specific app (null = main panel domain)
+  app         App?     @relation(fields: [appId], references: [id], onDelete: Cascade)
+  status      String   @default("ACTIVE") // ACTIVE | PENDING | FAILED
+  sslStatus   String   @default("ACTIVE") // ACTIVE | PENDING | NONE
+  isPrimary   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

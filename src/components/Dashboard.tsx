@@ -7,6 +7,7 @@ import Sidebar, { type ViewType } from '@/components/Sidebar'
 import OwnerOverview from '@/components/owner/OwnerOverview'
 import UsersManager from '@/components/owner/UsersManager'
 import PackagesViewer from '@/components/owner/PackagesViewer'
+import DomainsManager from '@/components/owner/DomainsManager'
 import AppsManager from '@/components/AppsManager'
 import UserOverview from '@/components/user/UserOverview'
 import SettingsPanel from '@/components/SettingsPanel'
@@ -19,7 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Menu, LayoutDashboard, Users, Rocket, Package as PackageIcon, BarChart3, Settings } from 'lucide-react'
+import { Menu, LayoutDashboard, Users, Rocket, Package as PackageIcon, BarChart3, Settings, Globe } from 'lucide-react'
 
 export default function Dashboard() {
   const { user } = useAppStore()
@@ -37,6 +38,8 @@ export default function Dashboard() {
         return <PackagesViewer />
       case 'apps':
         return <AppsManager isOwner={isOwner} />
+      case 'domains':
+        return isOwner ? <DomainsManager /> : <UserOverview />
       case 'stats':
         return isOwner ? <OwnerOverview /> : <UserOverview />
       case 'settings':
@@ -51,6 +54,7 @@ export default function Dashboard() {
         { id: 'overview', label: t('overview'), icon: <LayoutDashboard className="w-4 h-4" /> },
         { id: 'users', label: t('users'), icon: <Users className="w-4 h-4" /> },
         { id: 'apps', label: t('applications'), icon: <Rocket className="w-4 h-4" /> },
+        { id: 'domains', label: t('domains'), icon: <Globe className="w-4 h-4" /> },
         { id: 'packages', label: t('packages'), icon: <PackageIcon className="w-4 h-4" /> },
         { id: 'stats', label: t('platform'), icon: <BarChart3 className="w-4 h-4" /> },
         { id: 'settings', label: t('settings'), icon: <Settings className="w-4 h-4" /> },

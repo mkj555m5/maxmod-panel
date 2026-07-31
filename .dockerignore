@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env*
+dev.log
+server.log
+download
+tests
+examples
+skills
+.zscripts
+.claude
+.z-ai-config
+db/*.db
+db/*.db-journal

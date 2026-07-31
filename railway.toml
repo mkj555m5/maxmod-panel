@@ -1,0 +1,20 @@
+# Railway configuration for maxmod-panel
+# Docs: https://docs.railway.app/deploy/config-as-code
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "bun run build"
+watchPatterns = ["src/**", "prisma/**", "public/**", "package.json", "next.config.ts", "tsconfig.json"]
+
+[deploy]
+startCommand = "bun run start:railway"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+
+# Port 8080 is auto-detected by Railway from the PORT env var.
+# To expose the service publicly:
+# 1. Go to Settings → Networking → Generate Domain (auto *.up.railway.app)
+# 2. Or Settings → Networking → Custom Domain (your-domain.com)
+# Railway will route the domain to the port your app listens on (PORT env).

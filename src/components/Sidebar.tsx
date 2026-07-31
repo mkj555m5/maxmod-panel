@@ -2,10 +2,10 @@
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { LayoutDashboard, Users, Package, Rocket, BarChart3, Settings } from 'lucide-react'
+import { LayoutDashboard, Users, Package, Rocket, BarChart3, Settings, Globe } from 'lucide-react'
 import { useTranslation } from '@/hooks/use-translation'
 
-export type ViewType = 'overview' | 'users' | 'packages' | 'apps' | 'stats' | 'settings'
+export type ViewType = 'overview' | 'users' | 'packages' | 'apps' | 'stats' | 'domains' | 'settings'
 
 interface SidebarProps {
   view: ViewType
@@ -27,6 +27,7 @@ export default function Sidebar({ view, setView, isOwner }: SidebarProps) {
     { id: 'overview', label: t('overview'), icon: <LayoutDashboard className="w-4 h-4" /> },
     { id: 'users', label: t('users'), icon: <Users className="w-4 h-4" /> },
     { id: 'apps', label: t('applications'), icon: <Rocket className="w-4 h-4" /> },
+    { id: 'domains', label: t('domains'), icon: <Globe className="w-4 h-4" /> },
     { id: 'packages', label: t('packages'), icon: <Package className="w-4 h-4" /> },
     { id: 'stats', label: t('platform'), icon: <BarChart3 className="w-4 h-4" /> },
     { id: 'settings', label: t('settings'), icon: <Settings className="w-4 h-4" /> },

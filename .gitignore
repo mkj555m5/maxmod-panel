@@ -52,3 +52,11 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Railway local config (don't commit secrets)
+railway.env
+
+# Data directory (SQLite persistence)
+/data/
+/db/*.db
+/db/*.db-journal
