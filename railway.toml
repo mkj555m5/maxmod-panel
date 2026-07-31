@@ -13,8 +13,26 @@ restartPolicyMaxRetries = 5
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
 
+# ==========================================
+# Volume (persistent storage for SQLite DB)
+# ==========================================
+# Without a volume, the SQLite database is wiped on every redeploy.
+# This volume persists /data across deployments and restarts.
+[[deploy.volume]]
+name = "maxmod-data"
+mountPath = "/data"
+size = "1GB"
+
 # Port 8080 is auto-detected by Railway from the PORT env var.
 # To expose the service publicly:
 # 1. Go to Settings → Networking → Generate Domain (auto *.up.railway.app)
 # 2. Or Settings → Networking → Custom Domain (your-domain.com)
 # Railway will route the domain to the port your app listens on (PORT env).
+
+# ==========================================
+# Required environment variables (set in Railway dashboard):
+# ==========================================
+# DATABASE_URL = file:/data/custom.db   <- MUST point to /data so DB persists
+# PORT = 8080                           <- auto-set by Railway
+# HOSTNAME = 0.0.0.0                    <- required for Railway
+# NODE_ENV = production

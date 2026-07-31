@@ -42,13 +42,19 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Copy Prisma files for DB access
+# Copy Prisma files for DB access (CLI + client + schema)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
-# Create data directory for SQLite
-RUN mkdir -p /app/db && chown -R nextjs:nodejs /app
+# Copy Railway startup script (runs prisma db push before server starts)
+COPY --from=builder /app/start-railway.sh ./start-railway.sh
+RUN chmod +x ./start-railway.sh
+
+# Create data directory for SQLite (volume mount point on Railway)
+# Railway mounts the volume at /data — make sure it exists and is writable
+RUN mkdir -p /app/db /data && chown -R nextjs:nodejs /app /data
 
 USER nextjs
 
@@ -58,4 +64,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
     CMD curl -f http://localhost:8080/api/health || exit 1
 
-CMD ["node", "server.js"]
+# Startup: apply Prisma schema to /data volume, then start the Next.js server
+CMD ["./start-railway.sh"]
