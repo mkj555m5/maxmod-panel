@@ -34,13 +34,20 @@ export default function LoginForm() {
       })
       const data = await res.json()
       if (!res.ok) {
-        toast.error(t('invalidCredentials'))
+        // Show specific error message from server when available
+        if (data?.error === 'server_error' && data?.message) {
+          toast.error(`${t('error')}: ${data.message}`)
+        } else if (data?.error === 'account_suspended') {
+          toast.error(locale === 'ar' ? 'الحساب موقوف' : 'Account suspended')
+        } else {
+          toast.error(t('invalidCredentials'))
+        }
         return
       }
       setUser(data.user)
       toast.success(t('welcomeBack') + ', ' + data.user.username)
-    } catch (e) {
-      toast.error(t('error'))
+    } catch (e: any) {
+      toast.error(`${t('error')}: ${e?.message || 'Network error'}`)
     } finally {
       setLoading(false)
     }

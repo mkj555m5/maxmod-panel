@@ -36,9 +36,9 @@ export async function POST(req: NextRequest) {
       },
     })
     return setSessionCookie(res, token)
-  } catch (e) {
-    console.error('Login error:', e)
-    return NextResponse.json({ error: 'server_error' }, { status: 500 })
+  } catch (e: any) {
+    console.error('Login error:', e?.message || e)
+    return NextResponse.json({ error: 'server_error', message: e?.message || 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -58,8 +58,8 @@ export async function GET(req: NextRequest) {
         package: user.package,
       },
     })
-  } catch (e) {
-    console.error('Me error:', e)
+  } catch (e: any) {
+    console.error('Me error:', e?.message || e)
     return NextResponse.json({ user: null }, { status: 200 })
   }
 }

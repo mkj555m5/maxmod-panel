@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from './db'
+import { ensureSchema } from './db-init'
 import { createHash, randomBytes } from 'crypto'
 
 // Simple session token store (in-memory for dev, would use Redis/DB in production)
@@ -69,9 +70,15 @@ export function setSessionCookie(res: NextResponse, token: string) {
 
 // Seed initial data (owner + packages + system stats)
 export async function seedDatabase() {
+  // Make sure schema is applied (creates tables if missing)
+  await ensureSchema()
+
   // Check if owner exists
   const existingOwner = await db.user.findFirst({
     where: { role: 'OWNER' },
+  }).catch((e) => {
+    console.error('[seedDatabase] findFirst failed:', e)
+    return null
   })
   if (existingOwner) return
 
