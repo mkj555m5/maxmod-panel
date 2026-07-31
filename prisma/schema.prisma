@@ -1,0 +1,65 @@
+// Maxmod Panel - Railway-style Node.js hosting panel
+// Database schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  password     String
+  role         String   @default("USER") // OWNER | USER
+  packageId    String?
+  package      Package? @relation(fields: [packageId], references: [id])
+  status       String   @default("ACTIVE") // ACTIVE | SUSPENDED
+  apps         App[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Package {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  displayName String
+  ramLimit    Int      // in MB
+  diskLimit   Int      // in MB
+  cpuLimit    Int      // percentage 1-100
+  appLimit    Int      // max number of apps
+  isUnlimited Boolean  @default(false) // GOD package
+  price       Float    @default(0)
+  color       String   @default("emerald")
+  users       User[]
+  createdAt   DateTime @default(now())
+}
+
+model App {
+  id          String   @id @default(cuid())
+  name        String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      String   @default("STOPPED") // RUNNING | STOPPED | DEPLOYING
+  port        Int
+  ramUsed     Int      @default(0) // in MB
+  diskUsed    Int      @default(0) // in MB
+  cpuUsed     Float    @default(0)
+  nodeVersion String   @default("22.x")
+  repoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SystemStat {
+  id        String   @id @default(cuid())
+  totalRam  Int      // total MB
+  totalDisk Int      // total MB
+  usedRam   Int      @default(0)
+  usedDisk  Int      @default(0)
+  cpuUsage  Float    @default(0)
+  updatedAt DateTime @updatedAt
+}
