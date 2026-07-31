@@ -1,19 +1,19 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "bun run build",
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile",
     "watchPatterns": [
       "src/**",
       "prisma/**",
       "public/**",
       "package.json",
       "next.config.ts",
-      "tsconfig.json"
+      "tsconfig.json",
+      "Dockerfile"
     ]
   },
   "deploy": {
-    "startCommand": "bun run start:railway",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5,
     "healthcheckPath": "/api/health",
